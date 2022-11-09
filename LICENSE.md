@@ -2,4 +2,4 @@ MIT License
 
 Copyright (c) 2022 Coda
 
-Per
+Permission is hereby granted, free of charg
