@@ -51,3 +51,40 @@ async function getChatCompletion(context: coda.ExecutionContext, request: ChatCo
 async function getCompletion(context: coda.ExecutionContext, request: CompletionsRequest): Promise<string> {
   try {
     // Call Chat Completion API if the model is a chat completion model.
+    if (isChatCompletionModel(request.model)) {
+      return getChatCompletion(context, {
+        model: request.model,
+        max_tokens: request.max_tokens,
+        temperature: request.temperature,
+        messages: [{role: 'user', content: request.prompt}],
+      });
+    }
+
+    const resp = await context.fetcher.fetch({
+      url: 'https://api.openai.com/v1/completions',
+      method: 'POST',
+      body: JSON.stringify(request),
+      headers: {'Content-Type': 'application/json'},
+    });
+    return resp.body.choices[0].text.trim();
+  } catch (err: any) {
+    if (err.statusCode === 429 && err.type === 'insufficient_quota') {
+      throw new coda.UserVisibleError(
+        "You've exceed your current OpenAI API quota. Please check your plan and billing details. For help, see https://help.openai.com/en/articles/6891831-error-code-429-you-exceeded-your-current-quota-please-check-your-plan-and-billing-details",
+      );
+    }
+
+    throw err;
+  }
+}
+
+const promptParam = coda.makeParameter({
+  type: coda.ParameterType.String,
+  name: 'prompt',
+  description: 'prompt',
+});
+
+const modelParameter = coda.makeParameter({
+  type: coda.ParameterType.String,
+  name: 'model',
+  description:
