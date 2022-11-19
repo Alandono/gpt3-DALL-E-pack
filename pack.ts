@@ -88,3 +88,33 @@ const modelParameter = coda.makeParameter({
   type: coda.ParameterType.String,
   name: 'model',
   description:
+    "the GPT-3 model to process your request. If you don't specify a model, it defaults to text-ada-001, which is the fastest and lowest cost. For higher quality generation, consider text-davinci-003. For more information, see https://platform.openai.com/docs/models/overview.",
+  optional: true,
+  autocomplete: async () => {
+    return [
+      'text-davinci-003',
+      'text-davinci-002',
+      'text-curie-001',
+      'text-babbage-001',
+      'text-ada-001',
+      'gpt-3.5-turbo',
+      'gpt-3.5-turbo-16k',
+      'gpt-4',
+      'gpt-4-32k',
+    ];
+  },
+});
+
+const numTokensParam = coda.makeParameter({
+  type: coda.ParameterType.Number,
+  name: 'numTokens',
+  description:
+    'the maximum number of tokens for the completion to output. Defaults to 512. Maximum of 2048 for most models and 4000 for davinci',
+  optional: true,
+});
+
+const temperatureParam = coda.makeParameter({
+  type: coda.ParameterType.Number,
+  name: 'temperature',
+  description:
+    'the temperature for how creative GPT-3 is with the completion. Must be between 0.0 and 1.0. Defaults to 1.0.',
