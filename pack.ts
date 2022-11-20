@@ -189,3 +189,53 @@ pack.addFormula({
       temperature,
       stop,
     };
+
+    const result = await getChatCompletion(context, request);
+
+    return result;
+  },
+});
+
+pack.addFormula({
+  name: 'GPT3Prompt',
+  description: 'Complete text from a prompt',
+  ...commonPromptParams,
+  isExperimental: true,
+} as any);
+
+pack.addFormula({
+  name: 'Prompt',
+  description: 'Complete text from a prompt',
+  ...commonPromptParams,
+} as any);
+
+pack.addFormula({
+  name: 'AnswerPrompt',
+  description:
+    'Complete text from a prompt, outputs the result from the action. This should only be used in a table in combination with outputting the result to a result column; otherwise, it takes no effect.',
+  ...commonPromptParams,
+  isAction: true,
+} as any);
+
+pack.addFormula({
+  name: 'GPT3PromptExamples',
+  description: 'Complete text from a prompt and a set of examples',
+  parameters: [
+    coda.makeParameter({
+      type: coda.ParameterType.String,
+      name: 'prompt',
+      description: 'prompt',
+    }),
+    coda.makeParameter({
+      type: coda.ParameterType.StringArray,
+      name: 'trainingPrompts',
+      description: 'Example prompts. Should be the same length as `trainingResponses`',
+    }),
+    coda.makeParameter({
+      type: coda.ParameterType.StringArray,
+      name: 'trainingResponses',
+      description: 'Example responses corresponding to `trainingPrompts`. Should be the same length.',
+    }),
+    modelParameter,
+    numTokensParam,
+    temperatureParam,
