@@ -239,3 +239,43 @@ pack.addFormula({
     modelParameter,
     numTokensParam,
     temperatureParam,
+    stopParam,
+  ],
+  resultType: coda.ValueType.String,
+  onError: handleError,
+  execute: async function (
+    [prompt, trainingPrompts, trainingResponses, model = DEFAULT_MODEL, max_tokens = 512, temperature, stop],
+    context,
+  ) {
+    coda.assertCondition(
+      trainingPrompts.length === trainingResponses.length,
+      'Must have same number of example prompts as example responses',
+    );
+    if (prompt.length === 0) {
+      return '';
+    }
+    coda.assertCondition(trainingResponses.length > 0, 'Please provide some training responses');
+
+    const exampleData = trainingPrompts.map((promptEx, i) => `${promptEx}\n${trainingResponses[i]}`).join('```');
+
+    const request = {
+      model,
+      prompt: exampleData + '```' + prompt + '\n',
+      max_tokens,
+      temperature,
+      stop,
+    };
+
+    const result = await getCompletion(context, request);
+
+    return result;
+  },
+});
+
+pack.addFormula({
+  name: 'QuestionAnswer',
+  description: 'Answer a question, simply provide a natural language question that you might ask Google or Wikipedia',
+  parameters: [promptParam, modelParameter, numTokensParam, temperatureParam, stopParam],
+  resultType: coda.ValueType.String,
+  onError: handleError,
+  execute: async function ([prompt, model = DEFAULT_MODEL, max_tokens = 128, temperature, stop], context) {
