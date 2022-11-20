@@ -151,3 +151,41 @@ const commonPromptParams = {
       temperature,
       stop,
     };
+
+    const result = await getCompletion(context, request);
+    return result;
+  },
+};
+
+pack.addFormula({
+  name: 'ChatCompletion',
+  description:
+    'Takes prompt as input, and return a model-generated message as output. Optionally, you can provide a system message to control the behavior of the chatbot.',
+  parameters: [promptParam, systemPromptParam, modelParameter, numTokensParam, temperatureParam, stopParam],
+  resultType: coda.ValueType.String,
+  onError: handleError,
+  execute: async function (
+    [userPrompt, systemPrompt, model = 'gpt-3.5-turbo', maxTokens = 512, temperature, stop],
+    context,
+  ) {
+    coda.assertCondition(isChatCompletionModel(model), 'Must use `gpt-3.5-turbo`-related models for this formula.');
+
+    if (userPrompt.length === 0) {
+      return '';
+    }
+
+    const messages: ChatCompletionMessage[] = [];
+
+    if (systemPrompt && systemPrompt.length > 0) {
+      messages.push({role: 'system', content: systemPrompt});
+    }
+
+    messages.push({role: 'user', content: userPrompt});
+
+    const request = {
+      model,
+      messages,
+      max_tokens: maxTokens,
+      temperature,
+      stop,
+    };
