@@ -118,3 +118,36 @@ const temperatureParam = coda.makeParameter({
   name: 'temperature',
   description:
     'the temperature for how creative GPT-3 is with the completion. Must be between 0.0 and 1.0. Defaults to 1.0.',
+  optional: true,
+});
+
+const systemPromptParam = coda.makeParameter({
+  type: coda.ParameterType.String,
+  name: 'systemPrompt',
+  description: "Optional. Helps define the behavior of the assistant. e.g. 'You are a helpful assistant.'",
+  optional: true,
+});
+
+const stopParam = coda.makeParameter({
+  type: coda.ParameterType.StringArray,
+  name: 'stop',
+  description: 'Optional. Up to 4 sequences where the API will stop generating further tokens.',
+  optional: true,
+});
+
+const commonPromptParams = {
+  parameters: [promptParam, modelParameter, numTokensParam, temperatureParam, stopParam],
+  resultType: coda.ValueType.String,
+  onError: handleError,
+  execute: async function ([prompt, model = DEFAULT_MODEL, max_tokens = 512, temperature, stop], context) {
+    if (prompt.length === 0) {
+      return '';
+    }
+
+    const request = {
+      model,
+      prompt,
+      max_tokens,
+      temperature,
+      stop,
+    };
