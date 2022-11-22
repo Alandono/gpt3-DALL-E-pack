@@ -411,3 +411,41 @@ pack.addFormula({
   description: 'Categorizes sentiment of text into positive, neutral, or negative',
   parameters: [promptParam, modelParameter, numTokensParam, temperatureParam, stopParam],
   resultType: coda.ValueType.String,
+  onError: handleError,
+  execute: async function ([prompt, model = DEFAULT_MODEL, max_tokens = 20, temperature, stop], context) {
+    if (prompt.length === 0) {
+      return '';
+    }
+
+    const newPrompt = `Decide whether the text's sentiment is positive, neutral, or negative.
+Text: ${prompt}
+Sentiment: `;
+
+    const request = {
+      model,
+      prompt: newPrompt,
+      max_tokens,
+      temperature,
+      stop,
+    };
+
+    const result = await getCompletion(context, request);
+
+    return result;
+  },
+});
+
+const styleParameter = coda.makeParameter({
+  type: coda.ParameterType.String,
+  name: 'style',
+  description:
+    "the style to use for your image. If you provide this, you don't need to specify the style in the prompt",
+  optional: true,
+  autocomplete: async () => {
+    return Object.keys(StyleNameToPrompt);
+  },
+});
+
+const StyleNameToPrompt = {
+  'Cave wall': 'drawn on a cave wall',
+  Basquiat: 'in the style of Basquiat',
