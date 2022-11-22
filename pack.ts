@@ -313,3 +313,35 @@ A: `;
       model,
       prompt: newPrompt,
       max_tokens,
+      temperature,
+      stop,
+    };
+
+    const result = await getCompletion(context, request);
+
+    return result;
+  },
+});
+
+pack.addFormula({
+  name: 'Summarize',
+  description: 'Summarize a large chunk of text',
+  parameters: [promptParam, modelParameter, numTokensParam, temperatureParam, stopParam],
+  resultType: coda.ValueType.String,
+  onError: handleError,
+  execute: async function ([prompt, model = DEFAULT_MODEL, max_tokens = 64, temperature, stop], context) {
+    if (prompt.length === 0) {
+      return '';
+    }
+
+    const newPrompt = `${prompt}\ntldr;\n`;
+
+    const request = {
+      model,
+      prompt: newPrompt,
+      max_tokens,
+      temperature,
+      stop,
+    };
+
+    const result = await getCompletion(context, request);
