@@ -371,3 +371,43 @@ ${prompt}`;
       temperature,
       stop,
     };
+
+    const result = await getCompletion(context, request);
+
+    return result;
+  },
+});
+
+pack.addFormula({
+  name: 'MoodToColor',
+  description: 'Generate a color for a mood',
+  parameters: [promptParam, modelParameter, numTokensParam, temperatureParam, stopParam],
+  resultType: coda.ValueType.String,
+  onError: handleError,
+  execute: async function ([prompt, model = DEFAULT_MODEL, max_tokens = 6, temperature, stop], context) {
+    if (prompt.length === 0) {
+      return '';
+    }
+
+    const newPrompt = `The css code for a color like ${prompt}:
+background-color: #`;
+
+    const request = {
+      model,
+      prompt: newPrompt,
+      max_tokens,
+      temperature,
+      stop,
+    };
+
+    const result = await getCompletion(context, request);
+
+    return result;
+  },
+});
+
+pack.addFormula({
+  name: 'SentimentClassifier',
+  description: 'Categorizes sentiment of text into positive, neutral, or negative',
+  parameters: [promptParam, modelParameter, numTokensParam, temperatureParam, stopParam],
+  resultType: coda.ValueType.String,
