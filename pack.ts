@@ -345,3 +345,29 @@ pack.addFormula({
     };
 
     const result = await getCompletion(context, request);
+
+    return result;
+  },
+});
+
+pack.addFormula({
+  name: 'Keywords',
+  description: 'Extract keywords from a large chunk of text',
+  parameters: [promptParam, modelParameter, numTokensParam, temperatureParam, stopParam],
+  resultType: coda.ValueType.String,
+  onError: handleError,
+  execute: async function ([prompt, model = DEFAULT_MODEL, max_tokens = 64, temperature, stop], context) {
+    if (prompt.length === 0) {
+      return '';
+    }
+
+    const newPrompt = `Extract keywords from this text:
+${prompt}`;
+
+    const request = {
+      model,
+      prompt: newPrompt,
+      max_tokens,
+      temperature,
+      stop,
+    };
