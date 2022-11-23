@@ -449,3 +449,34 @@ const styleParameter = coda.makeParameter({
 const StyleNameToPrompt = {
   'Cave wall': 'drawn on a cave wall',
   Basquiat: 'in the style of Basquiat',
+  'Digital art': 'as digital art',
+  Photorealistic: 'in a photorealistic style',
+  'Andy Warhol': 'in the style of Andy Warhol',
+  'Pencil drawing': 'as a pencil drawing',
+  '1990s Saturday morning cartoon': 'as a 1990s Saturday morning cartoon',
+  Steampunk: 'in a steampunk style',
+  Solarpunk: 'in a solarpunk style',
+  'Studio Ghibli': 'in the style of Studio Ghibli',
+  'Movie poster': 'as a movie poster',
+  'Book cover': 'as a book cover',
+  'Album cover': 'as an album cover',
+  '3D Icon': 'as a 3D icon',
+  'Ukiyo-e': 'in the style of Ukiyo-e',
+};
+
+pack.addFormula({
+  name: 'CreateDalleImage',
+  description: 'Create image from prompt',
+  cacheTtlSecs: 60 * 60,
+  parameters: [
+    coda.makeParameter({
+      type: coda.ParameterType.String,
+      name: 'prompt',
+      description: 'prompt',
+    }),
+    coda.makeParameter({
+      type: coda.ParameterType.String,
+      name: 'size',
+      description: 'size',
+      optional: true,
+      autocomplete: async () => {
