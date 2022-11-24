@@ -480,3 +480,40 @@ pack.addFormula({
       description: 'size',
       optional: true,
       autocomplete: async () => {
+        return ['256x256', '512x512', '1024x1024'];
+      },
+    }),
+    styleParameter,
+    coda.makeParameter({
+      type: coda.ParameterType.Boolean,
+      name: 'temporaryUrl',
+      description: 'Return a temporary URL that expires after an hour. Useful for adding the image to an Image column, because the default data URIs are too long.',
+      optional: true,
+    }),
+  ],
+  resultType: coda.ValueType.String,
+  codaType: coda.ValueHintType.ImageReference,
+  onError: handleError,
+  execute: async function ([prompt, size = '512x512', style, temporaryUrl], context) {
+    if (prompt.length === 0) {
+      return '';
+    }
+
+    const request = {
+      size,
+      prompt: style ? prompt + ' ' + StyleNameToPrompt[style] ?? style : prompt,
+      response_format: temporaryUrl ? 'url' : 'b64_json',
+    };
+
+    const resp = await context.fetcher.fetch({
+      url: 'https://api.openai.com/v1/images/generations',
+      method: 'POST',
+      body: JSON.stringify(request),
+      headers: {'Content-Type': 'application/json'},
+    });
+    if (temporaryUrl) {
+      return resp.body.data[0].url;
+    } else {
+      return `data:image/png;base64,${resp.body.data[0].b64_json}`;
+    }
+  },
