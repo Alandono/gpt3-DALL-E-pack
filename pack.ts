@@ -517,3 +517,22 @@ pack.addFormula({
       return `data:image/png;base64,${resp.body.data[0].b64_json}`;
     }
   },
+});
+
+function handleError(error: Error) {
+  if (coda.StatusCodeError.isStatusCodeError(error)) {
+    // Cast the error as a StatusCodeError, for better intellisense.
+    let statusError = error as coda.StatusCodeError;
+    let message = statusError.body?.error?.message;
+
+    // If the API returned a 400 error with message, show it to the user.
+    if (statusError.statusCode === 400 && message) {
+      if (message) {
+        throw new coda.UserVisibleError(message);
+      }
+    }
+  }
+  // The request failed for some other reason. Re-throw the error so that it
+  // bubbles up.
+  throw error;
+}
