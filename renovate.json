@@ -1,2 +1,4 @@
 {
-  "$schema": "https://docs.renovatebot.com/ren
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "c
