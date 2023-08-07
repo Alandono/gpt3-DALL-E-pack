@@ -1,2 +1,5 @@
 {
-  "compilerOptions
+  "compilerOptions": {
+    "lib": ["es2020"]
+  }
+}
